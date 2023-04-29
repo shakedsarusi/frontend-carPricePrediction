@@ -2,11 +2,17 @@ import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select'
+import './styles/Predictprice.css'
 
 const Predictprice = () => {
     const [inputs, setInputs] = useState({});
     const [carlist, setcarlist] = useState([]);
     const [resPredictedPrice, setResPredictedPrice] = useState("");
+    const [fuel, setFule] = useState([]);
+    const [seller, setSeller] = useState([]);
+    const [transmission, setTransmission] = useState([]);
+    const [owner, setOwner] = useState([]);
+
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -14,18 +20,55 @@ const Predictprice = () => {
         setInputs(values => ({...values, [name]: value}))
       }
     
+    const handleCarModeChange = (input) => {
+        setInputs(values => ({...values, "carModel": input["value"]}))
+    }
+
+    const handleFuleChange = (input) => {
+        setInputs(values => ({...values, "fuel": input["value"]}))
+    }
+
+    const handleSellerChange = (input) => {
+        setInputs(values => ({...values, "sellertype": input["value"]}))
+    }
+    const handleTransmissionChange = (input) => {
+        setInputs(values => ({...values, "transmission": input["value"]}))
+
+    }
+
+    const handleOwnerChange = (input) => {
+        setInputs(values => ({...values, "owner": input["value"]}))
+    }
+    
       const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(inputs);
         getPredictedPrice(inputs)
       }
+      
+    function convertArrayToValueLableOptions(options) {
+        let ValueLableList = []
+        for (const index in options){
+            ValueLableList.push({ value: options[index], label: options[index] })
+        }; 
+        return ValueLableList;
+    }
 
       useState(()=> {
         axios.get('http://127.0.0.1:8000/listOfCars')
         .then(res => {
             let carlist = res.data.split(',')
+            carlist = convertArrayToValueLableOptions(carlist)
             setcarlist(carlist);
         })
+        const fuelOptions = convertArrayToValueLableOptions(["Petrol","Diesel", "CNG", "LPG"])
+        const sellerOptions = convertArrayToValueLableOptions(["Individual","Dealer"])
+        const transmissionOptions = convertArrayToValueLableOptions(["Manual","Automatic"])
+        const ownerOptions = convertArrayToValueLableOptions(["First Owner","Second Owner", "Third Owner", "Fourth And Above Owner"])
+
+        setFule(fuelOptions)
+        setSeller(sellerOptions)
+        setTransmission(transmissionOptions)
+        setOwner(ownerOptions)
     })
 
     function getPredictedPrice(inputs) {
@@ -36,99 +79,64 @@ const Predictprice = () => {
         })
     }
 
+
+
     return (
        <form onSubmit={handleSubmit}>
          <h1>Predict Price page</h1>
          <br />
-        
-         {/* <label>
-        Choose Car Model: 
-        <Select name="carModel" value={inputs.carModel} onChange={handleChange}>
-            {carlist.map((option) => (
-                <option value={option}>{option}</option>
-            ))}
-        </Select>
-        </label> */}
         <label>
-          Search Car Model:
-          <input 
-              type="text"
-              name="carModel"
-              value={inputs.carModel}
-              onChange={handleChange}
-              list="carModels"
-          />
-          <datalist id="carModels">
-              {carlist.map((option) => (
-                  <option value={option} />
-              ))}
-          </datalist>
+          <div className='subTitel'>Search Car Model: </div>
+          <Select options={carlist} onChange={handleCarModeChange} className="select"/>
       </label>  
         <br />
-        <br />
-      <label>Enter Year(1990-2023):
+      <label>
+      <div className='subTitel'>Enter Year(1990-2023): </div>
         <input 
           type="text" 
           name="year" 
           value={inputs.year || ""} 
           onChange={handleChange}
+          className='input'
         />
         </label>
         <br /> <br />
-        <label>Enter KM Driven:
+        <label>
+        <div className='subTitel'>Enter KM Driven:</div>
         <input 
           type="text" 
           name="kmdriven" 
           value={inputs.kmdriven || ""} 
           onChange={handleChange}
+          className='input'
         />
         </label>
         <br /> <br />
         <label>
-        Choose a Fuel:
-        <select name="fuel" value={inputs.fuel} onChange={handleChange}>
-            <option value="">Select fuel type</option>
-            <option value="Petrol">Petrol</option>
-            <option value="Diesel">Diesel</option>
-            <option value="CNG">CNG</option>
-            <option value="LPG">LPG</option>
-        </select>
+            <div className='subTitel'>Choose a Fuel:</div>
+            <Select options={fuel} onChange={handleFuleChange} className="select"/>
         </label>
-        <br /> <br />
+        <br />
         <label>
-        Choose Seller Type:
-        <select name="sellertype" value={inputs.sellertype} onChange={handleChange}>
-            <option value="">Select seller type</option>
-            <option value="Individual">Individual</option>
-            <option value="Dealer">Dealer</option>
-        </select>
+            <div className='subTitel'>Choose Seller Type:</div>
+            <Select options={seller} onChange={handleSellerChange} className="select"/>
         </label>
-        <br /> <br />
+        <br />
         <label>
-        Choose Transmission:
-        <select name="transmission" value={inputs.transmission} onChange={handleChange}>
-            <option value="">Select Transmission</option>
-            <option value="Manual">Manual</option>
-            <option value="Automatic">Automatic</option>
-        </select>
+            <div className='subTitel'>Choose Transmission:</div>
+            <Select options={transmission} onChange={handleTransmissionChange} className="select"/>
         </label>
-        <br /> <br />
+        <br />
         <label>
-        Choose Owner:
-        <select name="owner" value={inputs.owner} onChange={handleChange}>
-            <option value="">Select Owner</option>
-            <option value="First Owner">First Owner</option>
-            <option value="Second Owner">Second Owner</option>
-            <option value="Third Owner">Third Owner</option>
-            <option value="Fourth">Fourth & Above Owner</option>
-        </select>
+            <div className='subTitel'>Choose Owner:</div>
+            <Select options={owner} onChange={handleOwnerChange} className="select"/>
         </label>
         <br /> <br />
-        <input type="submit" />
-        <br /> <br />
+        <input type="submit" className='submit'/>
+        <br />
         <div>
             {resPredictedPrice?(
-                <h3>{resPredictedPrice}</h3>
+                <h3 className="PredictedPriceAnswer">Price: {resPredictedPrice}</h3>
             ):("")}
         </div>
     </form>

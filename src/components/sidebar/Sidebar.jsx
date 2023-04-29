@@ -12,23 +12,18 @@ import { NavLink } from 'react-router-dom';
 const Sidebar = ({children}) => {
     const menuItem=[
         {
-            path:"/",
-            name:"Dashboard",
-            icon:<FaTh/>
-        },
-        {
             path:"/about",
             name:"About",
             icon:<FaUserAlt/>
         },
         {
             path:"/predictprice",
-            name:"Predictprice",
+            name:"Predict Price",
             icon:<FaRegChartBar/>
         },
         {
             path:"/carrec",
-            name:"Carrec",
+            name:"Car Recommandation",
             icon:<FaRegChartBar/>
         }
     ]
